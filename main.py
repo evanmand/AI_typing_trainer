@@ -4,16 +4,17 @@ from tkinter import ttk
 root = Tk()
 root.grid_columnconfigure(0, weight = 0)
 root.grid_columnconfigure(1, weight = 1)
-root.grid_rowconfigure(0, weight = 1)
+root.grid_rowconfigure(0, weight = 0)
+root.grid_rowconfigure(1, weight = 1)
 
 frm = ttk.Frame(root, padding=10)
 frm.grid()
 
 def create_label(input_text, row):
-    label = ttk.Label(frm, text=input_text, font=("Arial", 25))
+    label = ttk.Label(frm, text=input_text, font=("Arial", 25), wraplength=1000, justify=LEFT)
     label.grid(column = 0,
                row = row,
-               sticky = W)
+               sticky = NW)
 
 def clear_frame():
    for widgets in root.winfo_children():
@@ -21,7 +22,7 @@ def clear_frame():
 
 string_thing = ""
 create_label("", 0) # Placeholder before user starts typing
-create_label("Prompt text", 1)
+create_label("ChatGPT (Chat Generative Pre-trained Transformer) is a large language model-based chatbot developed by OpenAI and launched on November 30, 2022, that enables users to refine and steer a conversation towards a desired length, format, style, level of detail, and language. Successive prompts and replies, known as prompt engineering, are considered at each conversation stage as a context.", 1)
 
 def keystroke(event):
     global string_thing
