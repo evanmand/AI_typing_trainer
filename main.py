@@ -5,15 +5,15 @@ root = Tk()
 frm = ttk.Frame(root, padding=10)
 frm.grid()
 
-string_thing = "QWer"
-
-def create_label(input_text):
-    input_text
-    text = ttk.Label(frm, text=input_text,font=("Arial", 25)).grid(column=0, row=0)
+def create_label(input_text, row):
+    ttk.Label(frm, text=input_text,font=("Arial", 25)).grid(column=0, row=row)
 
 def clear_frame():
    for widgets in root.winfo_children():
       widgets.destroy()
+
+string_thing = ""
+create_label("Prompt text", 1)
 
 def keystroke(event):
     global string_thing
@@ -22,9 +22,8 @@ def keystroke(event):
     # clear_frame()
     # string_thing = string_thing + key
     # string_thing = string_thing + key
-    temp_string = string_thing + key
-    string_thing = "BB"
-    create_label(temp_string)
+    string_thing = string_thing + key
+    create_label(string_thing, 0)
 
 
     # text = ttk.Label(frm, text=key,font=("Arial", 25)).grid(column=0, row=0)
