@@ -6,6 +6,8 @@ root.grid_columnconfigure(0, weight = 0)
 root.grid_columnconfigure(1, weight = 1)
 root.grid_rowconfigure(0, weight = 0)
 root.grid_rowconfigure(1, weight = 1)
+root.attributes("-fullscreen", False)
+root.update()
 
 frm = ttk.Frame(root, padding=10)
 frm.grid()
