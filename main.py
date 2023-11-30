@@ -2,7 +2,14 @@ from tkinter import *
 from tkinter import ttk
 from openai import OpenAI
 
-# client = OpenAI()
+f = open("api_key.txt", "r")
+key = f.readline()
+f.close()
+print(key)
+
+client = OpenAI(
+    api_key=key,
+)
 
 root = Tk()
 root.grid_columnconfigure(0, weight = 0)
@@ -39,7 +46,15 @@ def keystroke(event):
 root.bind('<Key>', keystroke)
 
 def main():
-    print("hehe")    # text = ttk.Label(frm, text=key,font=("Arial", 25)).grid(column=0, row=0)
+    # Generate new prompt text from ChatGPT
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."},
+            {"role": "user", "content": "Compose a poem that explains the concept of recursion in programming."}
+        ]
+    )
+    print(completion.choices[0].message)
 
 create_label("", 10) # Placeholder before user starts typing
 create_label("ChatGPT (Chat Generative Pre-trained Transformer) is a large language model-based chatbot developed by OpenAI and launched on November 30, 2022, that enables users to refine and steer a conversation towards a desired length, format, style, level of detail, and language. Successive prompts and replies, known as prompt engineering, are considered at each conversation stage as a context.", 1)
