@@ -5,13 +5,13 @@ from openai import OpenAI
 f = open("api_key.txt", "r")
 key = f.readline()
 f.close()
-print(key)
 
 client = OpenAI(
     api_key=key,
 )
 
 root = Tk()
+root.title("Evan's Typing Tutor") 
 root.grid_columnconfigure(0, weight = 0)
 root.grid_columnconfigure(1, weight = 1)
 root.grid_rowconfigure(0, weight = 0)
@@ -31,21 +31,28 @@ def clear_frame():
    for widgets in root.winfo_children():
       widgets.destroy()
 
-string_thing = ""
+user_input = ""
 
 def keystroke(event):
-    global string_thing
+    global user_input
     key = event.char
     print(f"'{key}' key pressed")
     # clear_frame()
     # string_thing = string_thing + key
     # string_thing = string_thing + key
-    string_thing = string_thing + key
-    create_label(string_thing, 0)
+    user_input = user_input + key
+    create_label(user_input, 0)
 
 root.bind('<Key>', keystroke)
 
 def main():
+    # Clear frame
+    for widgets in frm.winfo_children():
+        widgets.destroy()
+
+    global user_input
+    user_input = ''
+
     # Generate new prompt text from ChatGPT
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -55,13 +62,14 @@ def main():
         ]
     )
     print(completion.choices[0].message)
+    prompt_text = "ststs"
+    create_label("", 10) # Placeholder before user starts typing
+    create_label(prompt_text, 1)
+    restart = ttk.Button(frm, text="Restart", command=main)
+    restart.grid()
+    exit = ttk.Button(frm, text="Quit", command=quit)
+    exit.grid()
 
-create_label("", 10) # Placeholder before user starts typing
-create_label("ChatGPT (Chat Generative Pre-trained Transformer) is a large language model-based chatbot developed by OpenAI and launched on November 30, 2022, that enables users to refine and steer a conversation towards a desired length, format, style, level of detail, and language. Successive prompts and replies, known as prompt engineering, are considered at each conversation stage as a context.", 1)
-restart = ttk.Button(frm, text="Restart", command=main)
-restart.grid()
-quit = ttk.Button(frm, text="Quit", command=quit)
-quit.grid()
     
 main()
 root.mainloop()
