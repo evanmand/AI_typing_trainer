@@ -57,8 +57,7 @@ def main():
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."},
-            {"role": "user", "content": "Compose a poem that explains the concept of recursion in programming."}
+            {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random using a lot of the letter 'z'."}
         ]
     )
     print(completion.choices[0].message)
