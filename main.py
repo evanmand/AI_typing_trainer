@@ -12,7 +12,7 @@ client = OpenAI(
 )
 
 root = Tk()
-root.title("Evan's Typing Tutor") 
+root.title("Evan's Typing Tutor")
 root.grid_columnconfigure(0, weight = 0)
 root.grid_columnconfigure(1, weight = 1)
 root.grid_rowconfigure(0, weight = 0)
@@ -46,7 +46,6 @@ def keystroke(event):
     global user_input
     global prompt_text
     global started
-    global correct_count
     global incorrect_count
     global start_time
     global end_time
@@ -71,9 +70,8 @@ def keystroke(event):
     if key == prompt_text[current_index]: # Correct key
         user_input = user_input + key
         current_text.destroy()
-        current_text = create_label(user_input, 0, 'black')
+        current_text = create_label(user_input, 0, 'white')
         current_index += 1
-        correct_count += 1
     else: # Wrong key
         user_input = user_input
         current_text.destroy()
@@ -109,9 +107,7 @@ def main():
     global started
     started = True
 
-    global correct_count
     global incorrect_count
-    correct_count = 0
     incorrect_count = 0
 
     user_input = 'Start typing the words below!'
@@ -129,7 +125,7 @@ def main():
     # content = completion.choices[0].message.content
     # content = content.split('\n')
     # prompt_text = content[-1]
-    prompt_text = "Test words hehehehe."
+    prompt_text = "A fox jumps over a cow or something like that."
 
 
     # print(type(prompt_text))
@@ -139,8 +135,8 @@ def main():
     #         letters[str(ord(char))] = letters[str(ord(char))] + 1
     # letters['iteration'] = letters['iteration'] + 1
 
-    create_label("", 10, 'black') # Placeholder before user starts typing
-    create_label(prompt_text, 1, 'black')
+    create_label("", 10, 'white') # Placeholder before user starts typing
+    create_label(prompt_text, 1, 'white')
     # print("Iteration: " + str(letters['iteration']))
     # print(letters)
     restart = ttk.Button(frm, text="Restart", command=main)
@@ -151,13 +147,19 @@ def main():
 def end_screen():
     for widgets in frm.winfo_children():
         widgets.destroy()
-    speed = "WPM: " + str(round(((len(prompt_text) / 5) / ((end_time - start_time)/ 1000) / 60)))
-    print(correct_count)
-    print(incorrect_count)
-    acc_string = "Accuracy: " + str(round(100 * (correct_count / (incorrect_count + correct_count)))) + "%"
-    create_label("Well done!", 0, 'black')
-    create_label(speed, 1, 'black')
-    create_label(acc_string, 2, 'black')
+    print(len(prompt_text))
+
+    words_count = len(prompt_text)
+    elapsed_time = (end_time - start_time) * 1000 # Convert from ms to seconds
+    speed = "WPM: " + str(round((words_count/elapsed_time) * 60 * 100)) + "%"
+
+    print("Correct " + str(len(prompt_text) - incorrect_count))
+    print("incorrect " + str(incorrect_count))
+
+    acc_string = "Accuracy: " + str(round(100 * ((len(prompt_text) - incorrect_count) / (incorrect_count + len(prompt_text) - incorrect_count)))) + "%"
+    create_label("Well done!", 0, 'white')
+    create_label(speed, 1, 'white')
+    create_label(acc_string, 2, 'white')
     restart = ttk.Button(frm, text="Restart", command=main)
     restart.grid()
     exit = ttk.Button(frm, text="Quit", command=quit)
