@@ -7,6 +7,12 @@ f = open("api_key.txt", "r")
 key = f.readline()
 f.close()
 
+theme = 'light' # Change dark/light mode
+if theme == 'light':
+    text_color = 'black'
+else:
+    text_color = 'white'
+
 client = OpenAI(
     api_key=key,
 )
@@ -18,6 +24,11 @@ root.grid_columnconfigure(1, weight = 1)
 root.grid_rowconfigure(0, weight = 0)
 root.grid_rowconfigure(1, weight = 1)
 root.attributes('-fullscreen', False)
+
+global first_round
+global most_missed_letter
+most_missed_letter = ''
+first_round = True
 
 frm = ttk.Frame(root, padding=10)
 frm.grid()
@@ -49,6 +60,7 @@ def keystroke(event):
     global incorrect_count
     global start_time
     global end_time
+    global most_missed_letter
 
     key = event.char
     print(f"'{key}' key pressed")
@@ -70,14 +82,14 @@ def keystroke(event):
     if key == prompt_text[current_index]: # Correct key
         user_input = user_input + key
         current_text.destroy()
-        current_text = create_label(user_input, 0, 'white')
+        current_text = create_label(user_input, 0, text_color)
         current_index += 1
     else: # Wrong key
         user_input = user_input
         current_text.destroy()
         current_text = create_label(user_input, 0, 'red')
-        if ord(key) in letters:
-            letters[key] = letters[key] + 1
+        if str(ord(key)) in letters:
+            letters[str(ord(key))] = letters[str(ord(key))] + 1
         incorrect_count += 1
 
     if current_index == len(prompt_text): # User has reached end of text
@@ -88,6 +100,8 @@ def keystroke(event):
 root.bind('<Key>', keystroke)
 
 def main():
+    global first_round
+
     # Clear frame
     for widgets in frm.winfo_children():
         widgets.destroy()
@@ -115,12 +129,14 @@ def main():
 
     # Generate new prompt text from ChatGPT
     print("Generating content, this will take a short moment...")
+    print(most_missed_letter)
+    if first_round:
+        message = {"role": "user", "content": "Hey ChatGPT please write a paragraph with less than 50 words about something random."}
+    else:
+        message = {"role": "user", "content": "Hey ChatGPT please write a paragraph with less than 50 words about something random using a lot of the letter " + chr(int(most_missed_letter)) + "."}
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random."}
-            # {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random using a lot of the letter 'z'."}
-        ]
+        messages=[message]
     )
     content = completion.choices[0].message.content
     content = content.split('\n')
@@ -135,8 +151,8 @@ def main():
     #         letters[str(ord(char))] = letters[str(ord(char))] + 1
     # letters['iteration'] = letters['iteration'] + 1
 
-    create_label("", 10, 'white') # Placeholder before user starts typing
-    create_label("\n" + prompt_text, 1, 'white')
+    create_label("", 10, text_color) # Placeholder before user starts typing
+    create_label("\n" + prompt_text, 1, text_color)
     # print("Iteration: " + str(letters['iteration']))
     # print(letters)
     restart = ttk.Button(frm, text="Restart", command=main)
@@ -145,6 +161,20 @@ def main():
     exit.grid()
 
 def end_screen():
+    global most_missed_letter
+    global first_round
+    most_missed_letter
+    first_round = False
+
+    # Find most missed letter
+    most_missed_letter = ''
+    most_misses = 0
+    for char in letters:
+        if letters[char] >= most_misses:
+            most_misses = letters[char]
+            most_missed_letter = char
+    letters[most_missed_letter] = 0 # Reset missed letter
+
     for widgets in frm.winfo_children():
         widgets.destroy()
     print(len(prompt_text))
@@ -157,9 +187,9 @@ def end_screen():
     print("incorrect " + str(incorrect_count))
 
     acc_string = "Accuracy: " + str(round(100 * ((len(prompt_text) - incorrect_count) / (incorrect_count + len(prompt_text) - incorrect_count)))) + "%"
-    create_label("Well done!", 0, 'white')
-    create_label(speed, 1, 'white')
-    create_label(acc_string, 2, 'white')
+    create_label("Well done!", 0, text_color)
+    create_label(speed, 1, text_color)
+    create_label(acc_string, 2, text_color)
     restart = ttk.Button(frm, text="Restart", command=main)
     restart.grid()
     exit = ttk.Button(frm, text="Quit", command=quit)
