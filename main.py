@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from openai import OpenAI
+import time
 
 f = open("api_key.txt", "r")
 key = f.readline()
@@ -32,12 +33,23 @@ def clear_frame():
    for widgets in root.winfo_children():
       widgets.destroy()
 
+# Create dictionary of characters (rather, their decimal values) to track how often they are missed
+letters = {}
+i = 33 # Start at char 33 (!), end at 126 (~)
+while i <= 126:
+    letters[str(i)] = 0
+    i += 1
+
 def keystroke(event):
     global current_index
     global current_text
     global user_input
     global prompt_text
     global started
+    global correct_count
+    global incorrect_count
+    global start_time
+    global end_time
 
     key = event.char
     print(f"'{key}' key pressed")
@@ -50,88 +62,42 @@ def keystroke(event):
         # global started
         started = False # This boolean helps erase starting text
         user_input = ''
+        start_time = time.time() # Time starts when first key is pressed
 
     # Check if typed character is correct
     print(key)
     print(prompt_text[current_index])
     print(key == prompt_text[current_index])
-    if key == prompt_text[current_index]:
+    if key == prompt_text[current_index]: # Correct key
         user_input = user_input + key
         current_text.destroy()
         current_text = create_label(user_input, 0, 'black')
         current_index += 1
-    else:
+        correct_count += 1
+    else: # Wrong key
         user_input = user_input
         current_text.destroy()
         current_text = create_label(user_input, 0, 'red')
+        if ord(key) in letters:
+            letters[key] = letters[key] + 1
+        incorrect_count += 1
+
+    if current_index == len(prompt_text): # User has reached end of text
+        end_time = time.time()
+        end_screen()
 
 
 root.bind('<Key>', keystroke)
 
-letters = {
-        '65': 0,
-        '66': 0,
-        '67': 0,
-        '68': 0,
-        '69': 0,
-        '70': 0,
-        '71': 0,
-        '72': 0,
-        '73': 0,
-        '74': 0,
-        '75': 0,
-        '76': 0,
-        '77': 0,
-        '78': 0,
-        '79': 0,
-        '80': 0,
-        '81': 0,
-        '82': 0,
-        '83': 0,
-        '84': 0,
-        '85': 0,
-        '86': 0,
-        '87': 0,
-        '88': 0,
-        '89': 0,
-        '90': 0,
-        '91': 0,
-        '92': 0,
-        '93': 0,
-        '94': 0,
-        '95': 0,
-        '96': 0,
-        '97': 0,
-        '98': 0,
-        '99': 0,
-        '100': 0,
-        '101': 0,
-        '102': 0,
-        '103': 0,
-        '104': 0,
-        '105': 0,
-        '106': 0,
-        '107': 0,
-        '108': 0,
-        '109': 0,
-        '110': 0,
-        '111': 0,
-        '112': 0,
-        '113': 0,
-        '114': 0,
-        '115': 0,
-        '116': 0,
-        '117': 0,
-        '118': 0,
-        '119': 0,
-        '120': 0,
-        '121': 0,
-        '122': 0
-    }
 def main():
     # Clear frame
     for widgets in frm.winfo_children():
         widgets.destroy()
+
+    global start_time
+    global end_time
+    start_time = ''
+    end_time = ''
 
     global current_index
     current_index = 0
@@ -142,6 +108,11 @@ def main():
 
     global started
     started = True
+
+    global correct_count
+    global incorrect_count
+    correct_count = 0
+    incorrect_count = 0
 
     user_input = 'Start typing the words below!'
     current_text = create_label(user_input, 0, 'grey')
@@ -172,6 +143,21 @@ def main():
     create_label(prompt_text, 1, 'black')
     # print("Iteration: " + str(letters['iteration']))
     # print(letters)
+    restart = ttk.Button(frm, text="Restart", command=main)
+    restart.grid()
+    exit = ttk.Button(frm, text="Quit", command=quit)
+    exit.grid()
+
+def end_screen():
+    for widgets in frm.winfo_children():
+        widgets.destroy()
+    speed = "WPM: " + str(round(((len(prompt_text) / 5) / ((end_time - start_time)/ 1000) / 60)))
+    print(correct_count)
+    print(incorrect_count)
+    acc_string = "Accuracy: " + str(round(100 * (correct_count / (incorrect_count + correct_count)))) + "%"
+    create_label("Well done!", 0, 'black')
+    create_label(speed, 1, 'black')
+    create_label(acc_string, 2, 'black')
     restart = ttk.Button(frm, text="Restart", command=main)
     restart.grid()
     exit = ttk.Button(frm, text="Quit", command=quit)
