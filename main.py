@@ -115,17 +115,17 @@ def main():
 
     # Generate new prompt text from ChatGPT
     print("Generating content, this will take a short moment...")
-    # completion = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random. Don't start with something like \"here's a paragraph about...\""}
-    #         # {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random using a lot of the letter 'z'."}
-    #     ]
-    # )
-    # content = completion.choices[0].message.content
-    # content = content.split('\n')
-    # prompt_text = content[-1]
-    prompt_text = "A fox jumps over a cow or something like that."
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random."}
+            # {"role": "user", "content": "Hey ChatGPT please write a paragraph about something random using a lot of the letter 'z'."}
+        ]
+    )
+    content = completion.choices[0].message.content
+    content = content.split('\n')
+    prompt_text = content[-1]
+    # prompt_text = "A fox jumps over a cow or something like that."
 
 
     # print(type(prompt_text))
@@ -136,7 +136,7 @@ def main():
     # letters['iteration'] = letters['iteration'] + 1
 
     create_label("", 10, 'white') # Placeholder before user starts typing
-    create_label(prompt_text, 1, 'white')
+    create_label("\n" + prompt_text, 1, 'white')
     # print("Iteration: " + str(letters['iteration']))
     # print(letters)
     restart = ttk.Button(frm, text="Restart", command=main)
@@ -151,7 +151,7 @@ def end_screen():
 
     words_count = len(prompt_text)
     elapsed_time = (end_time - start_time) * 1000 # Convert from ms to seconds
-    speed = "WPM: " + str(round((words_count/elapsed_time) * 60 * 100)) + "%"
+    speed = "WPM: " + str(round((words_count/elapsed_time) * 60 * 100))
 
     print("Correct " + str(len(prompt_text) - incorrect_count))
     print("incorrect " + str(incorrect_count))
