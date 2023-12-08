@@ -7,7 +7,7 @@ f = open("api_key.txt", "r")
 key = f.readline()
 f.close()
 
-theme = 'light' # Change dark/light mode
+theme = 'dark' # Change dark/light mode
 if theme == 'light':
     text_color = 'black'
 else:
@@ -141,20 +141,10 @@ def main():
     content = completion.choices[0].message.content
     content = content.split('\n')
     prompt_text = content[-1]
-    # prompt_text = "A fox jumps over a cow or something like that."
-
-
-    # print(type(prompt_text))
-    # print(prompt_text)
-    # for char in prompt_text:
-    #     if str(ord(char)) in letters:
-    #         letters[str(ord(char))] = letters[str(ord(char))] + 1
-    # letters['iteration'] = letters['iteration'] + 1
 
     create_label("", 10, text_color) # Placeholder before user starts typing
     create_label("\n" + prompt_text, 1, text_color)
-    # print("Iteration: " + str(letters['iteration']))
-    # print(letters)
+
     restart = ttk.Button(frm, text="Restart", command=main)
     restart.grid()
     exit = ttk.Button(frm, text="Quit", command=quit)
