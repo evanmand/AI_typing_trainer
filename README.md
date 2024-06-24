@@ -1,4 +1,4 @@
-# AI_typing_trainer
+# AI Typing Trainer
 Evan Anderson
 USU CS5890 Final Project
 
